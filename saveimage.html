@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<!--version: 0.8-->
+
+<html>
+
+<head>
+  <meta charset="UTF-8"/>
+  <title>--&gt; Your Title Goes Here &lt;--</title>
+  <style>
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      border: 0;
+      padding: 0;
+    }
+    body {
+      background-color: #ccc;
+    }
+    *[hidden] {
+      display: none !important;
+    }
+
+    .one-hundred-percent {
+      width: 100%;
+      height: 100%;
+    }
+    .relative {
+      position: relative;
+    }
+    .centering-parent {
+      /*overflow: scroll;*/
+      display: flex;
+      flex-flow: column nowrap;
+      justify-content: space-evenly;
+      align-items: center;
+    }
+    .centering-child {
+      flex: 0 0 auto;
+    }
+    .centered-column {
+      display: flex;
+      flex-flow: column nowrap;
+      justify-content: space-evenly;
+      align-items: center;
+    }
+    .centered-column > * {
+      flex: 0 0 auto;
+    }
+
+    #ui_maindiv {
+      position: relative;
+      background-color: #fff;
+      border: 1px #000 solid;
+      padding: 2%;
+    }
+    .H {
+      /*width: 100%;
+      text-align: center;*/
+    }
+    #ui_theimg_container {
+      padding: 0%;
+    }
+    #ui_infopanel {
+      position: relative;
+      width: 100%;
+      height: 0;
+    }
+    #ui_infopanel > div {
+      /*position: fixed;
+      --width: 20%;*/
+      position: absolute;
+      --width: 120%;
+      width: var(--width);
+      left: calc(50% - var(--width) * 0.5);
+      background-color: #d7d3db;
+      border: 1px #000 solid;
+      text-align: left;
+    }
+    #ui_infopanel p {
+      margin: 4px;
+    }
+  </style>
+
+  <script type="text/javascript">
+    function SetImageSrc (url) {
+      var url = ui_textinput.value;
+      if (!url) {
+        ui_theimg_container.hidden = true;
+      } else {
+        ui_theimg_container.hidden = false;
+        ui_theimg.src = url;
+        ui_theimg_downloadlink.href = url;
+      }
+    }
+
+    window.onload = function () {
+      //ui_textinput.();
+    }
+  </script>
+</head>
+
+<body class="one-hundred-percent centering-parent">
+  <div id="ui_maindiv" class="centering-child centered-column">
+    <div class="H"><h2>Just An Image</h2></div>
+    <div><br/></div>
+    <div>
+      <input id="ui_textinput" type="text" autocomplete="off" value="" onkeypress="if(event.key=='Enter') ui_mainButton.click()"></input>
+    </div>
+    <div>
+      <button id="ui_mainButton" onclick="SetImageSrc()">Set Image</button>
+      <button onclick="">Download</button>
+    </div>
+    <div><br/><br/><br/></div>
+    <div>
+      <a href="javascript:void(0)" onclick="ui_infopanel.hidden = !ui_infopanel.hidden">Info</a>
+    </div>
+    <div id="ui_infopanel" hidden>
+      <div onclick="ui_infopanel.hidden = true">
+        <p>A webapplet for loading and saving a single image.</p>
+        <div style="text-align: center">(Click again to hide.)</div>
+      </div>
+    </div>
+  </div>
+  <div id="ui_theimg_container" class="centered-column" hidden>
+    <img id="ui_theimg"/>
+    <div><br></div>
+    <a id="ui_theimg_downloadlink" href="javascript:void(0)" download="true" onclick="">Download</a>
+  </div>
+
+</body>
+
+</html>
+

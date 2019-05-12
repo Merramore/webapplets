@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<!--version: 0.9.1-->
+<!--TODO: Load icon from file-->
+
+<html>
+
+<head>
+  <meta charset="UTF-8"/>
+  <title>--&gt; Your Title Goes Here &lt;--</title>
+  <style>
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      border: 0;
+      padding: 0;
+    }
+
+    .one-hundred-percent {
+      width: 100%;
+      height: 100%;
+    }
+    .relative {
+      position: relative;
+    }
+    .centering-parent {
+      overflow: scroll;
+      display: flex;
+      flex-flow: column nowrap;
+      justify-content: space-evenly;
+      align-items: center;
+    }
+    .centering-child {
+      flex: 0 0 auto;
+    }
+    .centered-column {
+      display: flex;
+      flex-flow: column nowrap;
+      justify-content: space-evenly;
+      align-items: center;
+    }
+    .centered-column > * {
+      flex: 0 0 auto;
+    }
+
+    #ui_maindiv {
+      position: relative;
+    }
+    .H {
+      /*width: 100%;
+      text-align: center;*/
+    }
+    #ui_bool_textboxencoding {
+      /*position: absolute;
+      right: 0%;*/
+    }
+    #ui_decode_error {
+      content: "!";
+      position: absolute;
+      left: 100%;
+      bottom: 0%;
+      color: #fff;
+      background-color: #f00;
+      margin-left: 4px;
+      padding: 1px;
+    }
+    #ui_infopanel {
+      position: relative;
+      width: 100%;
+      height: 0;
+    }
+    #ui_infopanel > div {
+      /*position: fixed;
+      --width: 20%;*/
+      position: absolute;
+      --width: 120%;
+      width: var(--width);
+      left: calc(50% - var(--width) * 0.5);
+      background-color: #d7d3db;
+      border: 1px #000 solid;
+      text-align: left;
+    }
+    #ui_infopanel p {
+      margin: 4px;
+    }
+  </style>
+
+  <script type="text/javascript">
+    function encode (s) {
+      return encodeURIComponent(s);
+    }
+    function decode (s) {
+      try {
+        return decodeURIComponent(s);
+      } catch (err) {
+        return null;
+      }
+    };
+
+    options = {
+      textboxencoding: false,
+    };
+
+    function setTitle () {
+      ui_decode_error.hidden = true;
+      var new_title = ui_titleinput.value, new_title_encoded;
+      if(options.textboxencoding) {
+        new_title_encoded = new_title;
+        new_title = decode(new_title_encoded);
+        if (new_title === null) {
+          new_title = new_title_encoded;
+          ui_decode_error.hidden = true;
+        }
+      } else {
+        new_title_encoded = encode(new_title);
+      }
+
+      document.title = new_title;
+      document.location.hash = "#" + new_title_encoded;
+    }
+
+    function onOptionsChanged () {
+      {//text box encoding
+        let ui_value = ui_bool_textboxencoding.checked;
+        let op_value = options.textboxencoding;
+        if (ui_value != op_value) {
+          altered_title = (ui_value? encode : decode)(ui_titleinput.value);
+          if (altered_title === null) {
+            ui_bool_textboxencoding.checked = op_value;
+            ui_decode_error.hidden = false;
+          } else {
+            ui_titleinput.value = altered_title;
+            options.textboxencoding = ui_value;
+          }
+        }
+      }
+    }
+
+    _byte_chars = [...Array(256).keys()].map(i=>String.fromCharCode(i)).join("");
+    _typeable_chars = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+    _dont_encode_regexp = new RegExp("["+_typeable_chars.replace(/./g,c=>c==c.replace(/.*/g,encodeURIComponent)?"":"\\"+c)+"]", "g")
+    function onLoad () {
+      var saved_title_encoded = document.location.hash.substr(1);
+      var saved_title = decode(saved_title_encoded);
+      var decode_error = (saved_title === null);
+      if (decode_error) {
+        saved_title = saved_title_encoded;
+        ui_decode_error.hidden = false;
+      }
+
+      //Check if the saved title is better represented in encoded format, ie cant be represented easily without it.
+      if(decode_error || saved_title.replace(_dont_encode_regexp, encode) != saved_title_encoded) {
+        ui_bool_textboxencoding.checked = true;
+        options.textboxencoding = true;
+      }
+
+      document.title = saved_title;
+      ui_titleinput.value = options.textboxencoding? saved_title_encoded : saved_title;
+    }
+    window.onload = onLoad;
+
+  </script>
+</head>
+
+<body>
+<div class="one-hundred-percent centering-parent">
+
+  <div id="ui_maindiv" class="centering-child centered-column">
+    <div class="H"><h2>Page Title:</h2></div>
+    <div><br/></div>
+    <div>
+      <input id="ui_titleinput" type="text" autocomplete="off" value="" onkeypress="if(event.key=='Enter') setTitle()"></input>
+    </div>
+    <div>
+      <button onclick="setTitle()">Set Title!</button>
+    </div>
+    <div><br/></div>
+    <div class="relative">
+      <label>
+        <div>
+          <input id="ui_bool_textboxencoding" type="checkbox" autocomplete="off" unchecked oninput="onOptionsChanged()"></input>
+          Edit as encoded URI
+        </div>
+      </label>
+      <div id="ui_decode_error" hidden>&nbsp;!&nbsp;</div>
+    </div>
+    <div><br/><br/><br/></div>
+    <div>
+      <a href="javascript:void(0)" onclick="ui_infopanel.hidden = !ui_infopanel.hidden">Info</a>
+    </div>
+    <div id="ui_infopanel" hidden>
+      <div onclick="ui_infopanel.hidden = true">
+        <p>A webapplet that allows you to have a page open with a desired title. Designed primarily to help organize browser tabs in alternative arrangements such as TreeStyleTabs.</p>
+        <div style="text-align: center">(Click again to hide.)</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+
+</html>
+
