@@ -2,13 +2,13 @@
 
 Small, single-function webpages to fill niches
 
-## Titlepage
+## [Titlepage](https://merramore.github.io/webapplets/titlepage.html)
 
 A page whose title you can set.
 
 * Plain text or URI-encoded input
 * Saves the title in the URL #fragment
 
-## SaveImage
+## [SaveImage](https://merramore.github.io/webapplets/titlepage.html)
 
 Display an image given its URL, with an explicit download link.
