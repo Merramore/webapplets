@@ -5,7 +5,7 @@
 
 <head>
   <meta charset="UTF-8"/>
-  <title>--&gt; Your Title Goes Here &lt;--</title>
+  <title>SaveImage</title>
   <style>
     html, body {
       width: 100%;
@@ -80,23 +80,56 @@
     #ui_infopanel p {
       margin: 4px;
     }
+    
+    .mainbutton {
+      width: 80px;
+    }
   </style>
 
   <script type="text/javascript">
-    function SetImageSrc (url) {
+    function SetImageSrcFromURL (url) {
       var url = ui_textinput.value;
       if (!url) {
         ui_theimg_container.hidden = true;
+        ui_theimg.src = undefined;
+        ui_theimg_downloadlink.href = undefined;
+        ui_theimg_downloadlink.download = undefined;
       } else {
         ui_theimg_container.hidden = false;
         ui_theimg.src = url;
         ui_theimg_downloadlink.href = url;
+        ui_theimg_downloadlink.download = url.replace(/^.*[\\\/]/, '');
+      }
+      ui_viewButton.disabled = true;
+    }
+
+    function DownloadFromURL (url) {
+    if (url === undefined)
+      var url = ui_textinput.value;
+      if (url) {
+        var old_url = ui_theimg_downloadlink.href;
+        var old_filename = ui_theimg_downloadlink.download;
+        ui_theimg_downloadlink.href = url;
+        ui_theimg_downloadlink.download = url.replace(/^.*[\\\/]/, '');
+        ui_theimg_downloadlink.click();
+        ui_theimg_downloadlink.href = old_url;
+        ui_theimg_downloadlink.download = old_filename;
       }
     }
 
-    window.onload = function () {
-      //ui_textinput.();
+    function OnKeypress (event) {
+      if (event.key == 'Enter')
+        ui_viewButton.click();
     }
+    function OnInput (event) {
+      ui_viewButton.disabled = (ui_textinput.value == ui_theimg.src);
+    }
+
+    window.onload = function () {
+      ui_textinput.onkeypress = OnKeypress;
+      ui_textinput.oninput    = OnInput;
+      ui_viewButton.disabled = true;
+    };
   </script>
 </head>
 
@@ -105,13 +138,13 @@
     <div class="H"><h2>Just An Image</h2></div>
     <div><br/></div>
     <div>
-      <input id="ui_textinput" type="text" autocomplete="off" value="" onkeypress="if(event.key=='Enter') ui_mainButton.click()"></input>
+      <input id="ui_textinput" type="text" autocomplete="off" value=""></input>
     </div>
     <div>
-      <button id="ui_mainButton" onclick="SetImageSrc()">Set Image</button>
-      <button onclick="">Download</button>
+      <button class="mainbutton" id="ui_viewButton" onclick="SetImageSrcFromURL()" disabled="true">View</button>
+      <button class="mainbutton onclick="DownloadFromURL()">Download</button>
     </div>
-    <div><br/><br/><br/></div>
+    <div><br/><!--br/><br/--></div>
     <div>
       <a href="javascript:void(0)" onclick="ui_infopanel.hidden = !ui_infopanel.hidden">Info</a>
     </div>
@@ -125,7 +158,7 @@
   <div id="ui_theimg_container" class="centered-column" hidden>
     <img id="ui_theimg"/>
     <div><br></div>
-    <a id="ui_theimg_downloadlink" href="javascript:void(0)" download="true" onclick="">Download</a>
+    <a id="ui_theimg_downloadlink" href="javascript:void(0)" download>Download</a>
   </div>
 
 </body>
