@@ -23,3 +23,11 @@ A blank webpage with a solid background color.
 * [Red](./solidcolor.html#f00) | [Yellow](./solidcolor.html#ff0) | [Green](./solidcolor.html#0f0) | [Cyan](./solidcolor.html#0ff) | [Blue](./solidcolor.html#00f) | [Magenta](./solidcolor.html#f0f)
 * [Sky Blue](./solidcolor.html#skyblue) | [Light Pink](./solidcolor.html#lightpink) | [Floral White](./solidcolor.html#floralwhite) | [Light Pink](./solidcolor.html#lightpink) | [Sky Blue](./solidcolor.html#skyblue)
 
+## [SolidColor](https://merramore.github.io/webapplets/fractime.html)
+
+Time of day as a fraction: 0 ≤ t < 1, written in various bases.
+
+ * [Example](./fractime.html?clocks=10,5,5;12,5,5;16,5,5)
+ * [Example](./fractime.html?clocks=10,5,5;12,5,5;16,5,5&zone=utc-6&sep=)
+ * [Default options](./fractime.html?clocks=10,5,5&zone=local&&sep=:)
+
