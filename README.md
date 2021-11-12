@@ -31,3 +31,7 @@ Time of day as a fraction: 0 ≤ t < 1, written in various bases.
  * [Example](./fractime.html?clocks=10,5,5;12,5,5;16,5,5&zone=utc-6&sep=)
  * [Default options](./fractime.html?clocks=10,5,5&zone=local&&sep=:)
 
+## [RandomWords](https://merramore.github.io/webapplets/randomwords.html)
+
+Random words for inspiration.
+

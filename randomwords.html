@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<!--version: 0.1.0+20111111-->
+
+<!--
+  Changelog:
+-->
+
+<html lang="en-us">
+
+<head>
+  <meta charset="UTF-8"/>
+  <title>Random Words</title>
+  <meta name="application-name" content="Random Words">
+  <meta name="author" content="[AM]">
+  <meta name="description" content="Generate a block of random words from one or more word lists.">
+  <meta id="me_version" name="version" content="0.1.0+202111112345">
+  <link rel="icon" type="image/x-icon" href="">
+
+  <meta name="mobile-web-app-capable">
+
+  <style>
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      border: 0;
+      padding: 0;
+    }
+
+    .one-hundred-percent {
+      width: 100%;
+      height: 100%;
+    }
+    .relative {
+      position: relative;
+    }
+    .centering-parent {
+      overflow: scroll;
+      display: flex;
+      flex-flow: column nowrap;
+      justify-content: space-evenly;
+      align-items: center;
+    }
+    .centering-child {
+      flex: 0 0 auto;
+    }
+    .centered-column {
+      display: flex;
+      flex-flow: column nowrap;
+      justify-content: space-evenly;
+      align-items: center;
+    }
+    .centered-column > * {
+      flex: 0 0 auto;
+    }
+    .centered-row {
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: space-evenly;
+      align-items: center;
+    }
+    .centered-row > * {
+      flex: 0 0 auto;
+    }
+
+    #ui_maindiv {
+      position: relative;
+    }
+    .H {
+      /*width: 100%;
+      text-align: center;*/
+      font-weight: bold;
+      font-size: large;
+      margin: 0.5em;
+    }
+	input[type=number] {
+	  width: 3em;
+	}
+    #ui_inspiration_output td {
+      padding: 4px;
+      border: 1px solid rgba(0, 0, 0, 0.2);
+      text-align: center;
+      min-width: 120px;
+    }
+    #ui_infopanel {
+      position: relative;
+      width: 100%;
+      height: 0;
+    }
+    #ui_infopanel > div {
+      /*position: fixed;
+      --width: 20%;*/
+      position: absolute;
+      --width: 60%;
+      width: var(--width);
+      left: calc(50% - var(--width) * 0.5);
+      background-color: #d7d3db;
+      border: 1px #000 solid;
+      text-align: left;
+    }
+    #ui_infopanel p {
+      margin: 4px;
+	  text-align: center;
+    }
+  </style>
+
+  <script type="text/javascript">
+    // general
+
+    function encode (s) {
+      return encodeURIComponent(s);
+    }
+    function decode (s) {
+      try {
+        return decodeURIComponent(s);
+      } catch (err) {
+        return null;
+      }
+    };
+
+    function simpleGetText (url) {
+      var request = new XMLHttpRequest();
+      var promise = new Promise((resolve, reject) => {
+///*
+        request.onreadystatechange = function () {
+          if (request.readyState === 4) {
+            if (request.status === 200) {
+              var type = request.responseType;
+              if (type === "text" || type === "")
+                resolve(request.responseText);
+              else
+                reject({"type": type});
+            } else {
+              reject({"status": request.status});
+            }
+          }
+        }
+//*/
+/*
+        request.onload = function () {
+          var type = request.responseType;
+          if (type === "text" || type === "")
+            resolve(request.responseText);
+          else
+            reject({"type": type});
+        };
+        //request.onerror = function (e) {
+        //  reject({"error": e});
+        //};
+        request.onabort = function (e) {
+          reject({"abort": e});
+        };
+        request.ontimeout = function (e) {
+          reject({"timeout": e});
+        };
+*/
+        request.open('GET', url);
+        request.send();
+      });
+      return promise;
+    }
+
+
+    // state
+
+    var state = {};
+    var defaults = {
+      width: 5,
+      height: 5,
+      wordlist: "English",
+    };
+
+    function saveState () {
+      //let params = new URLSearchParams();
+
+      //if (state.wordlist !== null && stat.ewordlist !== defaults.wordlist)
+      //params.append("wordlist", state.wordlist);
+
+      //let url = new URL(location);
+      //url.search = params.toString()
+      //history.replaceState(null, null, url);
+
+      //history.replaceState(state, null, url);
+
+      history.replaceState(state, null, null);
+    }
+
+    function loadState (dst_state = state) {
+      for (let [k, v] of Object.entries(defaults))
+        dst_state[k] = v;
+      if (history.state !== null)
+        for (let [k, v] of Object.entries(history.state))
+          dst_state[k] = v;
+      let params = new URLSearchParams(location.search);
+      for (let [k, v] of params) {
+        switch (k) {
+          default:
+            if (defaults[k] === undefined)
+              break;
+          case 'width':
+          case 'height':
+          case 'wordlist':
+            dst_state[k] = v;
+            break
+        }
+      }
+    }
+
+
+    // wordlists
+
+    var wordlist_info = {
+      "English": {"url": "https://raw.githubusercontent.com/dwyl/english-words/master/words.txt"},
+    };
+    var wordlists = {};
+    var active_words = [];
+    
+    var has_done_inspiration = false;
+
+    function compileWordlist () {
+      active_words = wordlists[state.wordlist] || [];
+	}
+
+    function onWordlistSelectionChanged () {
+      // Selected wordlist may or may not be loaded.
+      saveState();
+      compileWordlist();
+      doInspiration();
+    }
+
+    function onWordlistLoaded (name, text) {
+      wordlists[name] = text.split("\n").map(line=>line.trim()).filter(word=>word);
+      if (name == state.wordlist)
+        compileWordlist();
+      if (active_words.length > 0 && !has_done_inspiration)
+        doInspiration();
+      onWordlistSelectionChanged();
+    }
+
+    function loadWords () {
+      for (let [name, info] of Object.entries(wordlist_info)) {
+        (p=simpleGetText(info.url)).then(text=>{
+          onWordlistLoaded(name, text);
+        });
+      }
+    }
+
+    function getRandomWord () {
+      if (active_words.length <= 0)
+        return "";
+      return active_words[Math.floor(Math.random()*active_words.length)];
+    }
+
+
+    // interactivity
+
+    function doInspiration () {
+      var w = state.width;
+      var h = state.height;
+      let table = ui_inspiration_output;
+      table.replaceChildren(...Array(h).fill(undefined).map((_, y)=>{
+        let row = document.createElement("tr");
+        row.replaceChildren(...Array(h).fill(undefined).map((_, x)=>{
+          let cell = document.createElement("td");
+          cell.innerText = getRandomWord();
+          return cell;
+        }));
+        return row;
+      }));
+      table.hidden = false;
+      has_done_inspiration = true;
+    }
+
+    function onOptionsChanged () {
+	  state.width = Number(ui_int_inspiration_width.value);
+	  state.height = Number(ui_int_inspiration_height.value);
+      saveState();
+    }
+
+
+    // loading
+
+    function onLoad () {
+      loadState();
+      loadWords();
+	  ui_version.innerText = me_version.content; // Make this run in the onload.
+    }
+    window.onload = onLoad;
+
+  </script>
+</head>
+
+<body>
+<div class="one-hundred-percent centering-parent">
+
+  <div id="ui_maindiv" class="centering-child centered-column">
+    <div class="H">Words:</div>
+    <div><br/></div>
+    <div class="relative">
+      <label><input id="ui_int_inspirationwidth"  type="number" value="5" min="1" oninput="onOptionsChanged(); doInspiration(true)"></input> Wide</label>
+      <label><input id="ui_int_inspirationheight" type="number" value="5" min="1" oninput="onOptionsChanged(); doInspiration(true)"></input> High</label>
+    </div>
+    <div>
+      <button onclick="doInspiration()">Inspire Me</button>
+    </div>
+    <div><br/><br/></div>
+    <div><table><tbody id="ui_inspiration_output" hidden></tbody></table></div>
+    <div><br/><br/></div>
+    <div>
+      <a href="javascript:void(0)" onclick="ui_infopanel.hidden = !ui_infopanel.hidden">Info</a>
+    </div>
+    <div id="ui_infopanel" hidden>
+      <div onclick="ui_infopanel.hidden = true">
+        <p>A webapplet that shows a block of randomly-chosed words from one or more wordlists. Intended to aid in choosing unique names & such.</p>
+		<br/>
+		<p><i>Version:</i> <span id="ui_version" onload="console.log(1); ui_version.innerText = me_version.content"></span></p>
+		<p><a href="https://merramore.github.io/webapplets/randomwords.html">Latest</a> - <a href="https://github.com/Merramore/webapplets/blob/master/randomwords.html">Source</a></p>
+        <div style="text-align: center">(Click again to hide.)</div>
+      </div>
+    </div>
+
+</div>
+</body>
+
+</html>
+
