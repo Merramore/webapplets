@@ -1,9 +1,12 @@
+// version: 0.1.1+202111112345
+
 "use strict";
 
-var defaults = {
-  'base': 10,
-  'interval': 5,
-  'min_tstep': 0.01,
+var constants = {
+  'default_base': 10,
+  'default_interval': 5,
+  'min_tstep': 1.0e0,
+  'max_tstep': 60.0,
 };
 var options = {
   'separator': ":",
@@ -72,13 +75,13 @@ function in_base (t, base, precision) {
 }
 
 function make_clock (base, precision, interval) {
-  var base = parse_int_option(base, defaults.base);
-  var precision = parse_int_option(precision, defaults.precision);
+  var base = parse_int_option(base, constants.default_base);
+  var precision = parse_int_option(precision, constants.default_precision);
   var interval = parse_int_option(interval, precision);
 
   if (base > default_alphabet.length)
     fatal_error(`ERROR: base ${base} larger than default alphabet size (${default_alphabet.length})`);
-    
+
   interval = 86400 * Math.pow(base, -interval);
   return [base, interval, precision];
 }
@@ -107,7 +110,7 @@ function clock_string (tod, clockdef) {
 }
 
 function all_clock_strings (tod) {
-  return options.clockdefs.map(clockdef => clock_string(tod, clockdef)).join("\n");  
+  return options.clockdefs.map(clockdef => clock_string(tod, clockdef)).join("\n");
 }
 
 function parse_args (__, options) {
@@ -173,7 +176,7 @@ function parse_args (__, options) {
 }
 
 var upcoming_ticks = [];
-var loop_trip = false;
+var loop_state = null;
 function loop () {
   var unix_time = Date.now();//TODO
 
@@ -182,8 +185,9 @@ function loop () {
   //
   //}
   ui_display.innerText = s;
-  
-  if (loop_trip) {
+
+  if (!loop_state) {
+    loop_state = null;
     return;
   }
 
@@ -192,15 +196,19 @@ function loop () {
     tstep = options.clockdefs[i][1];
     upcoming_ticks[i] = upt + Math.floor((unix_time - upt)/tstep + 1)*tstep;
   }
-  var sleeptime = Math.max(Math.min(...upcoming_ticks.map(upt=>upt-unix_time)), 0.01);
+  var sleeptime = Math.max(Math.min(...upcoming_ticks.map(upt=>upt-unix_time), constants.max_tstep), constants.min_tstep);
   setTimeout(loop, sleeptime);
 }
 function stop_loop () {
-  loop_trip = true;
+  loop_state = false;
 }
 function start_loop () {
-  loop_trip = false;
-  loop();
+  if (loop_state === null) {
+    loop_state = true;
+    loop();
+  } else {
+    loop_state = true;
+  }
 }
 
 function main () {
@@ -208,3 +216,4 @@ function main () {
 
   start_loop();
 }
+
