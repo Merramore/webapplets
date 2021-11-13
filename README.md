@@ -1,4 +1,4 @@
-# webapplets
+# [Webapplets](https://merramore.github.io/webapplets)
 
 Small, single-function webpages to fill niches
 
