@@ -120,6 +120,7 @@
 
     function simpleGetText (url) {
       var request = new XMLHttpRequest();
+      request.responseType = "text";
       var promise = new Promise((resolve, reject) => {
 ///*
         request.onreadystatechange = function () {
@@ -167,7 +168,7 @@
     var defaults = {
       width: 5,
       height: 5,
-      wordlist: "English",
+      wordlist: "English [dwyl]",
     };
 
     function saveState () {
@@ -209,9 +210,13 @@
 
     // wordlists
 
-    var wordlist_info = {
-      "English": {"url": "https://raw.githubusercontent.com/dwyl/english-words/master/words.txt"},
-    };
+    var wordlist_info = [
+      {"name": "English [dwyl]", "url": "wordlists/dwyl_english-words.txt"},
+      {"name": "EFF long", "regex": /(?<=\t)\w+/g, "column": 1, "url": "wordlists/eff_large_wordlist.txt"},
+      {"name": "EFF short", "column": 1, "url": "wordlists/eff_short_wordlist_1.txt"},
+      {"name": "EFF short 2", "column": 1, "url": "wordlists/eff_short_wordlist_2_0.txt"},
+      //{"name": "", "url": ""},
+    ];
     var wordlists = {};
     var active_words = [];
     
@@ -223,26 +228,41 @@
 
     function onWordlistSelectionChanged () {
       // Selected wordlist may or may not be loaded.
+      state.wordlist = ui_inspiration_wordlist_selector.value || defaults.wordlist;
       saveState();
       compileWordlist();
       doInspiration();
     }
 
-    function onWordlistLoaded (name, text) {
-      wordlists[name] = text.split("\n").map(line=>line.trim()).filter(word=>word);
-      if (name == state.wordlist)
+    function onWordlistLoaded (info, text) {
+      var words;
+      if (info.regex !== undefined)
+        words = [...text.matchAll(info.regex)].map(m=>m[0]);
+      else if (info.column !== undefined)
+        words = text.split("\n").map(line=>line.trim().split(/\s+/)[info.column]).filter(word=>word);
+      else
+        words = text.split("\n").map(line=>line.trim()).filter(word=>word);
+      wordlists[info.name] = words;
+      if (info.name == state.wordlist)
         compileWordlist();
       if (active_words.length > 0 && !has_done_inspiration)
         doInspiration();
-      onWordlistSelectionChanged();
     }
 
     function loadWords () {
-      for (let [name, info] of Object.entries(wordlist_info)) {
+      for (let info of wordlist_info) {
+        let option = document.createElement("option");
+        option.innerText = info.name;
+        option.classList.add("wordlist-option-load-pending");
+        ui_inspiration_wordlist_selector.appendChild(option);
         (p=simpleGetText(info.url)).then(text=>{
-          onWordlistLoaded(name, text);
+          option.classList.add("wordlist-option-load-pending", "wordlist-option-load-done");
+          onWordlistLoaded(info, text);
+        }).catch(reason=>{
+          option.classList.add("wordlist-option-load-pending", "wordlist-option-load-failed");
         });
       }
+      ui_inspiration_wordlist_selector.value = state.wordlist;
     }
 
     function getRandomWord () {
@@ -296,6 +316,9 @@
   <div id="ui_maindiv" class="centering-child centered-column">
     <div class="H">Words:</div>
     <div><br/></div>
+    <div>
+      <select id="ui_inspiration_wordlist_selector" value="" onchange="onWordlistSelectionChanged()"></select>
+    </div>
     <div class="relative">
       <label><input id="ui_int_inspirationwidth"  type="number" value="5" min="1" oninput="onOptionsChanged(); doInspiration(true)"></input> Wide</label>
       <label><input id="ui_int_inspirationheight" type="number" value="5" min="1" oninput="onOptionsChanged(); doInspiration(true)"></input> High</label>
@@ -313,7 +336,7 @@
       <div onclick="ui_infopanel.hidden = true">
         <p>A webapplet that shows a block of randomly-chosed words from one or more wordlists. Intended to aid in choosing unique names & such.</p>
         <br/>
-        <p><i>Version:</i> <span id="ui_version" onload="console.log(1); ui_version.innerText = me_version.content"></span></p>
+        <p><i>Version:</i> <span id="ui_version" onload="ui_version.innerText = me_version.content"></span></p>
         <p><a href="https://merramore.github.io/webapplets/randomwords.html">Latest</a> - <a href="https://github.com/Merramore/webapplets/blob/master/randomwords.html">Source</a></p>
         <div style="text-align: center">(Click again to hide.)</div>
       </div>
