@@ -73,9 +73,9 @@
       font-size: large;
       margin: 0.5em;
     }
-	input[type=number] {
-	  width: 3em;
-	}
+    input[type=number] {
+      width: 3em;
+    }
     #ui_inspiration_output td {
       padding: 4px;
       border: 1px solid rgba(0, 0, 0, 0.2);
@@ -100,7 +100,7 @@
     }
     #ui_infopanel p {
       margin: 4px;
-	  text-align: center;
+      text-align: center;
     }
   </style>
 
@@ -219,7 +219,7 @@
 
     function compileWordlist () {
       active_words = wordlists[state.wordlist] || [];
-	}
+    }
 
     function onWordlistSelectionChanged () {
       // Selected wordlist may or may not be loaded.
@@ -272,8 +272,8 @@
     }
 
     function onOptionsChanged () {
-	  state.width = Number(ui_int_inspiration_width.value);
-	  state.height = Number(ui_int_inspiration_height.value);
+      state.width = Number(ui_int_inspiration_width.value);
+      state.height = Number(ui_int_inspiration_height.value);
       saveState();
     }
 
@@ -283,7 +283,7 @@
     function onLoad () {
       loadState();
       loadWords();
-	  ui_version.innerText = me_version.content; // Make this run in the onload.
+      ui_version.innerText = me_version.content; // Make this run in the onload.
     }
     window.onload = onLoad;
 
@@ -312,9 +312,9 @@
     <div id="ui_infopanel" hidden>
       <div onclick="ui_infopanel.hidden = true">
         <p>A webapplet that shows a block of randomly-chosed words from one or more wordlists. Intended to aid in choosing unique names & such.</p>
-		<br/>
-		<p><i>Version:</i> <span id="ui_version" onload="console.log(1); ui_version.innerText = me_version.content"></span></p>
-		<p><a href="https://merramore.github.io/webapplets/randomwords.html">Latest</a> - <a href="https://github.com/Merramore/webapplets/blob/master/randomwords.html">Source</a></p>
+        <br/>
+        <p><i>Version:</i> <span id="ui_version" onload="console.log(1); ui_version.innerText = me_version.content"></span></p>
+        <p><a href="https://merramore.github.io/webapplets/randomwords.html">Latest</a> - <a href="https://github.com/Merramore/webapplets/blob/master/randomwords.html">Source</a></p>
         <div style="text-align: center">(Click again to hide.)</div>
       </div>
     </div>
