@@ -280,7 +280,7 @@
       let table = ui_inspiration_output;
       table.replaceChildren(...Array(h).fill(undefined).map((_, y)=>{
         let row = document.createElement("tr");
-        row.replaceChildren(...Array(h).fill(undefined).map((_, x)=>{
+        row.replaceChildren(...Array(w).fill(undefined).map((_, x)=>{
           let cell = document.createElement("td");
           cell.innerText = getRandomWord();
           return cell;
@@ -300,8 +300,14 @@
 
     // loading
 
+    function loadOptionsUI () {
+      ui_int_inspiration_width.value = state.width;
+      ui_int_inspiration_height.value = state.height;
+    }
+
     function onLoad () {
       loadState();
+      loadOptionsUI();
       loadWords();
       ui_version.innerText = me_version.content; // Make this run in the onload.
     }
@@ -320,8 +326,8 @@
       <select id="ui_inspiration_wordlist_selector" value="" onchange="onWordlistSelectionChanged()"></select>
     </div>
     <div class="relative">
-      <label><input id="ui_int_inspirationwidth"  type="number" value="5" min="1" oninput="onOptionsChanged(); doInspiration(true)"></input> Wide</label>
-      <label><input id="ui_int_inspirationheight" type="number" value="5" min="1" oninput="onOptionsChanged(); doInspiration(true)"></input> High</label>
+      <label><input id="ui_int_inspiration_width"  type="number" value="5" min="1" oninput="onOptionsChanged(); doInspiration(true)"></input> Wide</label>
+      <label><input id="ui_int_inspiration_height" type="number" value="5" min="1" oninput="onOptionsChanged(); doInspiration(true)"></input> High</label>
     </div>
     <div>
       <button onclick="doInspiration()">Inspire Me</button>
