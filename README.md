@@ -35,3 +35,6 @@ Time of day as a fraction: 0 ≤ t < 1, written in various bases.
 
 Random words for inspiration.
 
+## [an href](https://merramore.github.io/webapplets/an_href.html)
+
+Paste and click.
