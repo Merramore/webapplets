@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<!--version: 1.0.1-->
-<!--date: 2021-11-26 27:56 CST-->
+<!--version: 1.0.2-->
+<!--date: 2029-01-29 21:07 CST-->
 
 <html>
   <head>
     <meta charset="UTF-8"/>
+    <link rel="manifest" href="manifest/solidcolor.json">
 
     <title>Solid Color: <unset></title>
     <link id="icon_link" type="image/x-icon" rel="shortcut icon" href="">
@@ -12,7 +13,7 @@
     <meta name="application-name" content="Random Words">
     <meta name="author" content="[AM]">
     <meta name="description" content="A blank webpage with a solid background color.">
-    <meta name="version" content="1.0.1+2021-11-26-27-56-CST">
+    <meta name="version" content="1.0.2+2022-01-29-21-07-CST">
 
     <meta name="mobile-web-app-capable">
 
@@ -35,23 +36,23 @@
         var color = decodeURIComponent(location.hash);
         if (!/^#[0-9a-f]{3}([0-9a-f]{3})?$/i.test(color))
           color = color.substr(1);
-        console.log(color);
+        //console.log(color);
         document.body.style.backgroundColor = color;
         document.title = `Solid Color: ${color}`;
-        color = document.body.style.backgroundColor;
-        var [color, r, g, b, a] = color.match(/^rgba?\((?<r>\d+), (?<g>\d+), (?<b>\d+)(?:, (?<a>\d+))?\)$/);
-        console.log(color, r, g, b, a);
+        color = getComputedStyle(document.body)["background-color"];
+        color = color.match(/^rgba?\((?<r>\d+), (?<g>\d+), (?<b>\d+)(?:, (?<a>\d+))?\)$/);
+        var [color, r, g, b, a] = color;
         const ICON_WIDTH = 16;
         const ICON_HEIGHT = 16;
-        let pixels = String.fromCodePoint(r&0xff, g&0xff, b&0xff);
+        let pixels = String.fromCodePoint(b&0xff, g&0xff, r&0xff);
         pixels = pixels.repeat(ICON_WIDTH);
         pixels += '\0'.repeat((4-pixels.length%4)%4);
         pixels = pixels.repeat(ICON_HEIGHT);
         const _BMP_SIZE = pixels.length + 14 + 12;
         const BMP_HEADER = 'BM' + [_BMP_SIZE, 0, 12+14, 12].map(pack_u32).join('')
                          + [ICON_WIDTH, ICON_HEIGHT, 1, 24].map(pack_u16).join('');
-        console.log([...BMP_HEADER].map(b=>b.codePointAt()));
-        console.log([...pixels].map(b=>b.codePointAt()));
+        //console.log([...BMP_HEADER].map(b=>b.codePointAt()));
+        //console.log([...pixels].map(b=>b.codePointAt()));
         icon_link.href = 'data:image/png;base64,'+btoa(BMP_HEADER + pixels);
       }
       window.onhashchange = TransferColor;
