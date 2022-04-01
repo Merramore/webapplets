@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!--version: 0.9.1-->
+<!--version: 0.10.0+20220401084530-->
 <!--TODO: Load icon from file-->
 
 <html>
@@ -117,6 +117,7 @@
 
       document.title = new_title;
       document.location.hash = "#" + new_title_encoded;
+      ui_newtab_link.href = document.location.href;
     }
 
     function onOptionsChanged () {
@@ -156,6 +157,7 @@
 
       document.title = saved_title;
       ui_titleinput.value = options.textboxencoding? saved_title_encoded : saved_title;
+      ui_newtab_link.href = document.location.href;
     }
     window.onload = onLoad;
 
@@ -183,6 +185,11 @@
         </div>
       </label>
       <div id="ui_decode_error" hidden>&nbsp;!&nbsp;</div>
+    </div>
+    <div><br/><br/></div>
+    <div>
+      <button onclick="ui_newtab_link.click()">Open in New Tab</button>
+      <a id="ui_newtab_link" href="" target="_blank" hidden>Open in New Tab</a>
     </div>
     <div><br/><br/><br/></div>
     <div>
