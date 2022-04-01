@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<!--version: 0.10.0+20220401084530-->
+<!--version: 0.10.1-->
+<!--date: 2022-04-01 11:25:00 CST-->
 <!--TODO: Load icon from file-->
 
 <html>
@@ -7,6 +8,15 @@
 <head>
   <meta charset="UTF-8"/>
   <title>--&gt; Your Title Goes Here &lt;--</title>
+
+  <meta name="application-name" content="Title Page">
+  <meta name="author" content="[AM]">
+  <meta name="description" content="Page with a user-set title.">
+  <meta id="meta_version" name="version" content="0.10.1.T2022040108112500Z-050000">
+  <link rel="icon" type="image/x-icon" href="">
+
+  <meta name="mobile-web-app-capable">
+
   <style>
     html, body {
       width: 100%;
@@ -198,6 +208,9 @@
     <div id="ui_infopanel" hidden>
       <div onclick="ui_infopanel.hidden = true">
         <p>A webapplet that allows you to have a page open with a desired title. Designed primarily to help organize browser tabs in alternative arrangements such as TreeStyleTabs.</p>
+        <br/>
+        <p><i>Version:</i> <span id="ui_version" onload="ui_version.innerText = meta_version.content"></span></p>
+        <p><a href="https://merramore.github.io/webapplets/titlepage.html">Latest</a> - <a href="https://github.com/Merramore/webapplets/blob/master/titlepage.html">Source</a></p>
         <div style="text-align: center">(Click again to hide.)</div>
       </div>
     </div>

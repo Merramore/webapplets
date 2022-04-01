@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<!--version: 0.2.0+20111112-->
+<!--version: 0.2.1-->
+<!--date: 2022-04-01 13:46:00 CST-->
 
 <!--
   Changelog:
@@ -13,7 +14,7 @@
   <meta name="application-name" content="Random Words">
   <meta name="author" content="[AM]">
   <meta name="description" content="Generate a block of random words from one or more word lists.">
-  <meta id="me_version" name="version" content="0.2.0+20211112">
+  <meta id="meta_version" name="version" content="0.2.1+T20220401134600Z-050000">
   <link rel="icon" type="image/x-icon" href="">
 
   <meta name="mobile-web-app-capable">
@@ -309,7 +310,6 @@
       loadState();
       loadOptionsUI();
       loadWords();
-      ui_version.innerText = me_version.content; // Make this run in the onload.
     }
     window.onload = onLoad;
 
@@ -342,7 +342,7 @@
       <div onclick="ui_infopanel.hidden = true">
         <p>A webapplet that shows a block of randomly-chosed words from one or more wordlists. Intended to aid in choosing unique names & such.</p>
         <br/>
-        <p><i>Version:</i> <span id="ui_version" onload="ui_version.innerText = me_version.content"></span></p>
+        <p><i>Version:</i> <span id="ui_version" onload="ui_version.innerText = meta_version.content"></span></p>
         <p><a href="https://merramore.github.io/webapplets/randomwords.html">Latest</a> - <a href="https://github.com/Merramore/webapplets/blob/master/randomwords.html">Source</a></p>
         <div style="text-align: center">(Click again to hide.)</div>
       </div>

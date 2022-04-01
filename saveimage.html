@@ -1,11 +1,20 @@
 <!DOCTYPE html>
-<!--version: 0.8-->
+<!--version: 0.8.1-->
+<!--date: 2022-04-01 13:46:00 CST-->
 
 <html>
 
 <head>
   <meta charset="UTF-8"/>
   <title>SaveImage</title>
+  <meta name="application-name" content="SaveImage">
+  <meta name="author" content="[AM]">
+  <meta name="description" content="A webapplet for loading and saving a single image.">
+  <meta id="meta_version" name="version" content="0.8.1+20220401134600Z-050000">
+  <link rel="icon" type="image/x-icon" href="">
+
+  <meta name="mobile-web-app-capable">
+
   <style>
     html, body {
       width: 100%;
@@ -151,6 +160,9 @@
     <div id="ui_infopanel" hidden>
       <div onclick="ui_infopanel.hidden = true">
         <p>A webapplet for loading and saving a single image.</p>
+        <br/>
+        <p><i>Version:</i> <span id="ui_version" onload="ui_version.innerText = meta_version.content"></span></p>
+        <p><a href="https://merramore.github.io/webapplets/saveimage.html">Latest</a> - <a href="https://github.com/Merramore/webapplets/blob/master/saveimage.html">Source</a></p>
         <div style="text-align: center">(Click again to hide.)</div>
       </div>
     </div>
