@@ -13,6 +13,10 @@ A page whose title you can set.
 
 Display an image given its URL, with an explicit download link.
 
+## [Images](https://merramore.github.io/webapplets/images.html)
+
+Display some images (and/or videos) given their URLs.
+
 ## [SolidColor](https://merramore.github.io/webapplets/solidcolor.html)
 
 A blank webpage with a solid background color.
