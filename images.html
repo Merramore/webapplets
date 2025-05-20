@@ -93,6 +93,25 @@
     .mainbutton {
       width: 80px;
     }
+
+    .img {
+      width: 100%;
+      height: auto;
+      max-width: 100%;
+      max-height: 100%;
+      min-width: 100%;
+      min-height: 100%;
+      object-fit: contain;
+    }
+    .vid {
+      width: 100%;
+      height: auto;
+      max-width: 100%;
+      max-height: 100%;
+      min-width: 100%;
+      min-height: 100%;
+      object-fit: contain;
+    }
   </style>
 
   <script type="text/javascript">
@@ -104,6 +123,20 @@
       return urls
     }
 
+    const video_formats = {
+      ".mp4": "video/mp4",
+      ".webm": "video/webm",
+      ".ogg": "video/ogg",
+      ".mov": "video/quicktime",
+    };
+    function UrlIsVideo (url) {
+      for (let ext of Object.keys(video_formats)) {
+        if (url.endsWith(ext))
+          return true;
+      }
+      return false;
+    }
+
     function SetImages (text) {
       if (text === undefined)
         text = ui_textinput.value;
@@ -113,26 +146,61 @@
       } else {
         var imgs = ui_theimg_container.children;
         var min_n = Math.min(urls.length, imgs.length);
+        // Create new <img>s as needed
+        for (let i = imgs.length; i < urls.length; i++) {
+          var wrapper = document.createElement("div");
+          var img = wrapper.img = document.createElement("img");
+          img.className = "img";
+          img.src = "";
+          img.hidden = true;
+          wrapper.appendChild(img);
+          var vid = wrapper.vid = document.createElement("video");
+          vid.className = "vid";
+          vid.controls = true;
+          vid.autoplay = true;
+          vid.loop = true;
+          vid.muted = true;
+          vid.hidden = true;
+          var vid_src = wrapper.vid_src = document.createElement("source");
+          vid_src.src = "";
+          vid_src.type = "";
+          vid.appendChild(vid_src);
+          wrapper.appendChild(vid);
+          ui_theimg_container.appendChild(wrapper);
+        }
         // Re-use existing <img>s
-        for (let i = 0; i < min_n; i++) {
-          imgs[i].src = urls[i];
-          imgs[i].hidden = false;
+        for (let i = 0; i < urls.length; i++) {
+          let wrapper = imgs[i];
+          let img = wrapper.img;
+          let vid = wrapper.vid;
+          let vid_src = wrapper.vid_src;
+          if (UrlIsVideo(urls[i])) {
+            img.hidden = true;
+            img.src = "";
+            vid_src.src = urls[i];
+            vid_src.type = video_formats[urls[i].slice(urls[i].lastIndexOf('.'))];
+            vid.hidden = false;
+          } else {
+            vid.hidden = true;
+            vid_src.src = "";
+            vid_src.type = "";
+            img.src = urls[i];
+            img.hidden = false;
+          }
+          wrapper.hidden = false;
         }
         // Hide unused <img>s
         for (let i = urls.length; i < imgs.length; i++) {
-          imgs[i].hidden = true;
-          imgs[i].src = "";
-        }
-        // Create new <img>s as needed
-        for (let i = imgs.length; i < urls.length; i++) {
-          var img = document.createElement("img");
-          img.src = urls[i];
-          img.style.maxWidth = "100%";
-          img.style.maxHeight = "100%";
-          img.style.width = "auto";
-          img.style.height = "auto";
-          ui_theimg_container.appendChild(img);
-          img.hidden = false;
+          let wrapper = imgs[i];
+          let img = wrapper.img;
+          let vid = wrapper.vid;
+          let vid_src = wrapper.vid_src;
+          wrapper.hidden = true;
+          img.hidden = true;
+          img.src = "";
+          vid.hidden = true;
+          vid_src.src = "";
+          vid_src.type = "";
         }
         ui_theimg_wrapper.hidden = false;
       }
