@@ -97,7 +97,8 @@
 
   <script type="text/javascript">
     function SetImageSrcFromURL (url) {
-      var url = ui_textinput.value;
+      if (url === undefined)
+        var url = ui_textinput.value;
       if (!url) {
         ui_theimg_container.hidden = true;
         ui_theimg.src = undefined;
@@ -113,8 +114,8 @@
     }
 
     function DownloadFromURL (url) {
-    if (url === undefined)
-      var url = ui_textinput.value;
+      if (url === undefined)
+        var url = ui_textinput.value;
       if (url) {
         var old_url = ui_theimg_downloadlink.href;
         var old_filename = ui_theimg_downloadlink.download;
@@ -147,7 +148,7 @@
     <div class="H"><h2>Just An Image</h2></div>
     <div><br/></div>
     <div>
-      <input id="ui_textinput" type="text" autocomplete="off" value=""></input>
+      <input id="ui_textinput" type="text" autocomplete="off" autofocus=""true" value=""></input>
     </div>
     <div>
       <button class="mainbutton" id="ui_viewButton" onclick="SetImageSrcFromURL()" disabled="true">View</button>
