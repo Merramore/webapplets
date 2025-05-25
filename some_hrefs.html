@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<!--version: 1.0.0-->
+<!--date: 2025-05-24 23:39:58 CDT-->
+
+<html>
+
+<head>
+  <meta charset="UTF-8"/>
+  <title><a/></title>
+  <meta name="application-name" content="an href">
+  <meta name="author" content="[AM]">
+  <meta name="description" content="Clickable links from pasted hrefs.">
+  <meta id="meta_version" name="version" content="1.0.0+T20250524233958-050000">
+  <link rel="icon" type="image/x-icon" href="">
+
+  <meta name="mobile-web-app-capable">
+
+  <style>
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      border: 0;
+      padding: 0;
+    }
+    body {
+      background-color: #ccc;
+    }
+    *[hidden] {
+      display: none !important;
+    }
+
+    .one-hundred-percent {
+      width: 100%;
+      height: 100%;
+    }
+    .relative {
+      position: relative;
+    }
+    .centering-parent {
+      overflow: scroll;
+      display: flex;
+      flex-flow: column nowrap;
+      justify-content: space-evenly;
+      align-items: center;
+    }
+    .centering-child {
+      flex: 0 0 auto;
+    }
+    .centered-column {
+      display: flex;
+      flex-flow: column nowrap;
+      justify-content: space-evenly;
+      align-items: center;
+    }
+    .centered-column > * {
+      flex: 0 0 auto;
+    }
+    .align-left {
+      text-align: left;
+    }
+    .align-right {
+      text-align: right;
+    }
+    .align-center {
+      text-align: center;
+    }
+
+    #ui_maindiv {
+      position: relative;
+      background-color: #fff;
+      border: 1px #000 solid;
+      padding: 2%;
+    }
+    .H {
+      /*width: 100%;
+      text-align: center;*/
+    }
+
+    .options {
+    }
+    .options option {
+        min-width: 5em;
+    }
+    .the-links {
+      /*font-size: 40pt;*/
+      text-align: center;
+    }
+
+    #ui_viewButton {
+      margin: 0 0.5em;
+      font-size: 2em;
+    }
+
+    #ui_infopanel {
+      position: relative;
+      width: 100%;
+      height: 0;
+    }
+    #ui_infopanel > div {
+      /*position: fixed;
+      --width: 20%;*/
+      position: absolute;
+      --width: 120%;
+      width: var(--width);
+      left: calc(50% - var(--width) * 0.5);
+      background-color: #d7d3db;
+      border: 1px #000 solid;
+      text-align: left;
+    }
+    #ui_infopanel p {
+      margin: 4px;
+    }
+    #ui_thelinks_container {
+      background-color: aliceblue;
+      border: 1px #000 solid;
+      padding: 1em;
+    }
+    #ui_backToTheTop {
+      text-align: center;
+      font-size: 0.8em;
+    }
+  </style>
+
+  <script type="text/javascript">
+    "use strict";
+
+    var last_good_text = "";
+
+    function parseTextInput (text) {
+      var hrefs = typeof text == "string"? text.split(/\s+/).map(s => s.trim()).filter(s => s.length > 0) : [];
+      console.debug("ParseTextInput: ", hrefs);
+      return hrefs
+    }
+
+    function setLinks () {
+      const link = ui_textinput.value;
+      const hrefs = parseTextInput(link);
+      const thelinks = ui_thelinks_container.children;
+      const rel = ui_input_ref.value;
+      const target = ui_input_target.value;
+
+      ui_thelinks_wrapper.hidden = true;
+
+      // Create new <a>s as needed.
+      for (let i = thelinks.length; i < hrefs.length; i++) {
+        const div = document.createElement("div");
+        div.id = "ui_link_" + i;
+        div.className = "the-links";
+        const a = div.a = document.createElement("a");
+        a.referrerPolicy = "no-referrer";
+        div.appendChild(a);
+        ui_thelinks_container.appendChild(div);
+      }
+      // Re-use existing <a>s as well.
+      for (let i = 0; i < hrefs.length; i++) {
+        const a = thelinks[i].a;
+        a.href = hrefs[i];
+        a.innerText = hrefs[i];
+        a.rel = rel;
+        a.target = target;
+        a.hidden = false;
+      }
+      // Hide unused <a>s.
+      for (let i = hrefs.length; i < thelinks.length; i++) {
+        const a = thelinks[i].a;
+        a.href = "";
+        a.innerText = "";
+        a.rel = rel;
+        a.target = target;
+        a.hidden = true;
+      }
+
+      ui_viewButton.disabled = true;
+      ui_thelinks_wrapper.hidden = false;
+    }
+
+    function updateLinks () {
+      const thelinks = ui_thelinks_container.children;
+      const rel = ui_input_ref.value;
+      const target = ui_input_target.value;
+      for (let i = 0; i < thelinks.length; i++) {
+        const a = thelinks[i].a;
+        a.rel = rel;
+        a.target = target;
+      }
+    }
+
+    function hideLinks () {
+      const thelinks = ui_thelinks_container.children;
+      ui_thelinks_wrapper.hidden = true;
+      for (let i = 0; i < thelinks.length; i++) {
+        const a = thelinks[i].a;
+        a.href = "";
+        a.innerText = "";
+        a.hidden = true;
+      }
+      ui_viewButton.disabled = (ui_textinput.value.trim().length == 0);
+    }
+
+    function clearLinks () {
+      ui_textinput.value = "";
+      hideLinks();
+    }
+
+    function onKeypress (event) {
+      if (event.ctrlKey && event.key == 'Enter')
+        ui_viewButton.click();
+    }
+    function onInput (event) {
+      ui_viewButton.disabled = (ui_textinput.value == last_good_text || ui_textinput.value.trim().length == 0);
+    }
+
+    function onLoad () {
+      //ui_input.value = "";
+    }
+    window.onload = onLoad;
+
+  </script>
+</head>
+
+<body>
+<div class="one-hundred-percent centering-parent">
+
+  <div id="ui_maindiv" class="centering-child centered-column">
+    <div class="H"><h2>&lt;some hrefs/&gt;</h2></div>
+    <div>
+      <a href="javascript:void(0)" onclick="ui_infopanel.hidden = !ui_infopanel.hidden">Info</a>
+    </div>
+    <div id="ui_infopanel" hidden>
+      <div onclick="ui_infopanel.hidden = true">
+        <p>A small webapplet that turns text into links.</p>
+        <br/>
+        <p><i>Version:</i> <span id="ui_version" onload="ui_version.innerText = meta_version.content"></span></p>
+        <p><a href="https://merramore.github.io/webapplets/some_hrefs.html">Latest</a> - <a href="https://github.com/Merramore/webapplets/blob/master/some_hrefs.html">Source</a></p>
+        <div style="text-align: center">(Click again to hide.)</div>
+      </div>
+    </div>
+    <div><br/></div>
+    <div>
+      <form>
+        <textarea id="ui_textinput" type="text" autocomplete="off" autofocus="true" value="" oninput="onInput(event)" onkeypress="onKeypress(event)"></textarea>
+      </form>
+    </div>
+    <div class="options">
+      <div class="align-right">
+        <label for="ui_input_ref">
+          rel="
+          <select id="ui_input_ref" value="" oninput="updateLinks()">
+            <option value=""></option>
+            <option value="alternate">alternate</option>
+            <option value="author">author</option>
+            <option value="bookmark">bookmark</option>
+            <option value="external">external</option>
+            <option value="help">help</option>
+            <option value="license">license</option>
+            <option value="next">next</option>
+            <option value="nofollow">nofollow</option>
+            <option value="noreferrer">noreferrer</option>
+            <option value="noopener">noopener</option>
+            <option value="prev">prev</option>
+            <option value="search">search</option>
+            <option value="tag">tag</option>
+          </select>
+          "
+        </label>
+      </div>
+      <div class="align-right">
+        <label for="ui_input_target">
+          target="
+          <select id="ui_input_target" value="_blank" oninput="updateLinks()">
+            <option value=""></option>
+            <option value="_blank">_blank</option>
+            <option value="_parent">_parent</option>
+            <option value="_self">_self</option>
+            <option value="_top">_top</option>
+          </select>
+          "
+        </label>
+      </div>
+      <div class="align-right">
+        <label for="ui_input_download">
+          download="
+            <input id="ui_input_download" type="checkbox" value="true"></input>
+          "
+        </label>
+      </div>
+      <div><br/></div>
+      <div class="align-center">
+        <button class="mainbutton" id="ui_viewButton" onclick="setLinks()" disabled>View</button>
+      </div>
+      <div class="align-center">
+        <button class="mainbutton" id="ui_hideButton" onclick="hideLinks()">Hide</button>
+        <button class="mainbutton" id="ui_clearButton" onclick="clearLinks()">Clear</button>
+      </div>
+    </div>
+    <div id="ui_thelinks_wrapper" hidden>
+      <div><br/><br/></div> 
+      <div id="ui_thelinks_container">
+        <!-- Links will be created here. -->
+      </div>
+      <div><br/></div>
+      <div id="ui_backToTheTop">
+        <a href="javascript:void(0)" onclick="window.scrollTo({top: 0})">Back to the top ↑</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+
+</html>
+
+
