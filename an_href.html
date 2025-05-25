@@ -23,6 +23,12 @@
       border: 0;
       padding: 0;
     }
+    body {
+      background-color: #ccc;
+    }
+    *[hidden] {
+      display: none !important;
+    }
 
     .one-hundred-percent {
       width: 100%;
@@ -50,9 +56,21 @@
     .centered-column > * {
       flex: 0 0 auto;
     }
+    .align-left {
+      text-align: left;
+    }
+    .align-right {
+      text-align: right;
+    }
+    .align-center {
+      text-align: center;
+    }
 
-    #ui_maindiv {/
+    #ui_maindiv {
       position: relative;
+      background-color: #fff;
+      border: 1px #000 solid;
+      padding: 2%;
     }
     .H {
       /*width: 100%;
@@ -60,7 +78,6 @@
     }
 
     .options {
-        text-align: right;
     }
     .options option {
         min-width: 5em;
@@ -91,6 +108,7 @@
   </style>
 
   <script type="text/javascript">
+    "use strict";
 
     function setLink () {
         const link = ui_input.value;
@@ -116,36 +134,47 @@
       <input id="ui_input" type="text" autocomplete="off" value="" oninput="setLink()"></input>
     </div>
     <div class="options">
-      <div>
-        ref="
-        <select id="ui_input_ref" value="" oninput="ui_link.ref = ui_input_ref.value">
-          <option value=""></option>
-          <option value="alternate">alternate</option>
-          <option value="author">author</option>
-          <option value="bookmark">bookmark</option>
-          <option value="external">external</option>
-          <option value="help">help</option>
-          <option value="license">license</option>
-          <option value="next">next</option>
-          <option value="nofollow">nofollow</option>
-          <option value="noreferrer">noreferrer</option>
-          <option value="noopener">noopener</option>
-          <option value="prev">prev</option>
-          <option value="search">search</option>
-          <option value="tag">tag</option>
-        </select>
-        "
+      <div class="align-right">
+        <label for="ui_input_ref">
+          rel="
+          <select id="ui_input_ref" value="" oninput="updateLinks()">
+            <option value=""></option>
+            <option value="alternate">alternate</option>
+            <option value="author">author</option>
+            <option value="bookmark">bookmark</option>
+            <option value="external">external</option>
+            <option value="help">help</option>
+            <option value="license">license</option>
+            <option value="next">next</option>
+            <option value="nofollow">nofollow</option>
+            <option value="noreferrer">noreferrer</option>
+            <option value="noopener">noopener</option>
+            <option value="prev">prev</option>
+            <option value="search">search</option>
+            <option value="tag">tag</option>
+          </select>
+          "
+        </label>
       </div>
-      <div>
-        target="
-        <select id="ui_input_target" value="_blank" oninput="ui_link.target = ui_input_targer.value">
-          <option value=""></option>
-          <option value="_blank">_blank</option>
-          <option value="_parent">_parent</option>
-          <option value="_self">_self</option>
-          <option value="_top">_top</option>
-        </select>
-        "
+      <div class="align-right">
+        <label for="ui_input_target">
+          target="
+          <select id="ui_input_target" value="_blank" oninput="updateLinks()">
+            <option value=""></option>
+            <option value="_blank">_blank</option>
+            <option value="_parent">_parent</option>
+            <option value="_self">_self</option>
+            <option value="_top">_top</option>
+          </select>
+          "
+        </label>
+      </div>
+      <div class="align-right">
+        <label for="ui_input_download">
+          download="
+            <input id="ui_input_download" type="checkbox" value="true"></input>
+          "
+        </label>
       </div>
     </div>
     <div><br/></div>
