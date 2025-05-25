@@ -42,3 +42,7 @@ Random words for inspiration.
 ## [an href](https://merramore.github.io/webapplets/an_href.html)
 
 Paste and click.
+
+## [some hrefs](https://merramore.github.io/webapplets/some_hrefs.html)
+
+Paste and click click click.
