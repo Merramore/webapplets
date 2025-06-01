@@ -200,7 +200,10 @@
 
     function clearLinks () {
       ui_textinput.value = "";
+      last_good_text = "";
       hideLinks();
+      //ui_viewButton.disabled = true;
+      ui_textinput.focus();
     }
 
     function onKeypress (event) {

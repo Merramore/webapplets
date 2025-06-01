@@ -115,7 +115,9 @@
   </style>
 
   <script type="text/javascript">
-    var last_good_text = undefined;
+    "use strict";
+
+    var last_good_text = "";
 
     function ParseImageSrcs (text) {
       var urls = typeof text == "string"? text.split(/\s+/).map(s => s.trim()).filter(s => s.length > 0) : [];
@@ -211,8 +213,9 @@
     function ClearImages () {
       ui_textinput.value = "";
       ui_viewButton.disabled = true;
-      last_good_text = undefined;
+      last_good_text = "";
       HideImages();
+      ui_textinput.focus();
     }
 
     function HideImages () {
