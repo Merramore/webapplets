@@ -119,8 +119,44 @@
 
     var last_good_text = "";
 
-    function ParseImageSrcs (text) {
-      var urls = typeof text == "string"? text.split(/\s+/).map(s => s.trim()).filter(s => s.length > 0) : [];
+    function ParseImageSrcs (text, syntax = 'literal') {
+      if (syntax == 'literal') {
+        // Split on whitespace, trim, and filter out empty strings
+        var urls = typeof text == "string"? text.split("\n").map(s => s.trim()).filter(s => s.length > 0) : [];
+        console.debug("ParseImageSrcs (literal): ", urls);
+        return urls;
+      } else if (syntax == 'basic') {
+        // Split on newlines, trim, and filter out empty strings.
+        // If a line starts with '#', treat it as a comment (ignore it).
+        // If a line starts with '@', treat it as a command (none defined).
+        // If a line starts with '=', treat everything after that as a link.
+        // If the line starts with any other non-word character, that is reserved syntax; throw an error.
+        // Otherwise, treat the line as a link.
+        var urls = [];
+        if (typeof text != "string")
+          return urls;
+        var lines = text.split("\n");
+        for (let line of lines) {
+          line = line.trim();
+          if (line.length == 0 || line.startsWith('#')) {
+            // Ignore empty lines and comments
+            continue;
+          } else if (line.startsWith('@')) {
+            // No commands defined, so raise an error
+            throw "ParseImageSrcs (basic): Unrecognized command: " + line;
+          } else if (line.startsWith('=')) {
+            // Take everything after '=' as a link
+            urls.push(line.slice(1).trim());
+          } else if (line.slice(0, 1).match(/\W/)) {
+            // If the line does not start with a word character, treat it as a link
+            throw "ParseImageSrcs (basic): Undefined start character: " + line;
+          } else {
+            // Treat the whole line as a link
+            urls.push(line);
+          }
+        }
+        return urls;
+      }
       console.debug("ParseImageSrcs: ", urls);
       return urls
     }
@@ -139,9 +175,11 @@
       return false;
     }
 
-    function SetImages (text) {
+    function SetImages (text, syntax) {
       if (text === undefined)
         text = ui_textinput.value;
+      if (syntax === undefined)
+        syntax = ui_input_syntax.value;
       var urls = ParseImageSrcs(text)
       if (urls.length == 0) {
         ui_theimg_wrapper.hidden = true;
@@ -248,6 +286,14 @@
   <div id="ui_maindiv" class="centering-child centered-column">
     <div class="H"><h2>Just Some Images</h2></div>
     <div><br/></div>
+    <div class="align-center">
+        <label for="ui_input_syntax" title="Hover on each option for syntax help.">
+          Syntax: 
+          <select id="ui_input_syntax" value="basic">
+            <option value="literal" title="Literal Syntax&NewLine;Just a list of image URLs, one per line.&NewLine;Trim whitespace and ignore empty lines.">Literal</option>
+            <option value="basic" title="Basic Syntax&NewLine;   A list of image URLs or special lines.&NewLine;The first non-whitespace character determines the line type:&NewLine;- '#' are comments and ignored.&NewLine;- '@' are commands (none defined).&NewLine;- '=' are literal links.&NewLine;- Any other non-word character are reserved syntax and throw an error.&NewLine;- Any word character are treated as links (implicit '=').">Basic</option>
+          </select>
+    </div>
     <div>
       <form>
         <!--input id="ui_textinput" type="text" autocomplete="off" autofocus=""true" value=""></input-->
