@@ -180,7 +180,7 @@
         text = ui_textinput.value;
       if (syntax === undefined)
         syntax = ui_input_syntax.value;
-      var urls = ParseImageSrcs(text)
+      var urls = ParseImageSrcs(text, syntax)
       if (urls.length == 0) {
         ui_theimg_wrapper.hidden = true;
       } else {
