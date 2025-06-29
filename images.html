@@ -181,89 +181,69 @@
       if (syntax === undefined)
         syntax = ui_input_syntax.value;
       var urls = ParseImageSrcs(text, syntax)
+      ui_theimg_container.replaceChildren();
       if (urls.length == 0) {
         ui_theimg_wrapper.hidden = true;
       } else {
         var imgs = ui_theimg_container.children;
         var min_n = Math.min(urls.length, imgs.length);
-        // Create new <img>s as needed
+        // Create new items as needed
         for (let i = imgs.length; i < urls.length; i++) {
           var wrapper = document.createElement("div");
-          var img = wrapper.img = document.createElement("img");
-          img.className = "img";
-          img.src = "";
-          img.hidden = true;
-          wrapper.appendChild(img);
-          var vid = wrapper.vid = document.createElement("video");
-          vid.className = "vid";
-          vid.controls = true;
-          vid.autoplay = true;
-          vid.loop = true;
-          vid.muted = true;
-          vid.hidden = true;
-          var vid_src = wrapper.vid_src = document.createElement("source");
-          vid_src.src = "";
-          vid_src.type = "";
-          vid.appendChild(vid_src);
-          wrapper.appendChild(vid);
-          ui_theimg_container.appendChild(wrapper);
-        }
-        // Re-use existing <img>s
-        for (let i = 0; i < urls.length; i++) {
-          let wrapper = imgs[i];
-          let img = wrapper.img;
-          let vid = wrapper.vid;
-          let vid_src = wrapper.vid_src;
+          wrapper.hidden = true;
           if (UrlIsVideo(urls[i])) {
-            img.hidden = true;
-            img.src = "";
+            var vid = wrapper.vid = document.createElement("video");
+            vid.className = "vid";
+            vid.controls = true;
+            vid.autoplay = true;
+            vid.loop = true;
+            vid.muted = true;
+            vid.hidden = true;
+            var vid_src = wrapper.vid_src = document.createElement("source");
             vid_src.src = urls[i];
             vid_src.type = video_formats[urls[i].slice(urls[i].lastIndexOf('.'))];
+            vid.appendChild(vid_src);
+            wrapper.appendChild(vid);
             vid.hidden = false;
           } else {
-            vid.hidden = true;
-            vid_src.src = "";
-            vid_src.type = "";
+            var img = wrapper.img = document.createElement("img");
+            img.className = "img";
             img.src = urls[i];
             img.hidden = false;
+            wrapper.appendChild(img);
           }
+          ui_theimg_container.appendChild(wrapper);
           wrapper.hidden = false;
-        }
-        // Hide unused <img>s
-        for (let i = urls.length; i < imgs.length; i++) {
-          let wrapper = imgs[i];
-          let img = wrapper.img;
-          let vid = wrapper.vid;
-          let vid_src = wrapper.vid_src;
-          wrapper.hidden = true;
-          img.hidden = true;
-          img.src = "";
-          vid.hidden = true;
-          vid_src.src = "";
-          vid_src.type = "";
         }
         ui_theimg_wrapper.hidden = false;
       }
-      ui_viewButton.disabled = true;
       last_good_text = text;
+      ui_viewButton.disabled = true;
+      ui_hideButton.innerText = "Hide";
+      ui_hideButton.disabled = (ui_theimg_container.children.length == 0);
     }
 
     function ClearImages () {
-      ui_textinput.value = "";
-      ui_viewButton.disabled = true;
       last_good_text = "";
-      HideImages();
+      ui_textinput.value = "";
+      ui_theimg_wrapper.hidden = true;
+      ui_theimg_container.replaceChildren();
+      ui_viewButton.disabled = true;
+      ui_hideButton.innerText = "Hide";
+      ui_hideButton.disabled = true;
       ui_textinput.focus();
     }
 
-    function HideImages () {
-      ui_theimg_wrapper.hidden = true;
-      var imgs = ui_theimg_container.children;
-      for (let i = 0; i < imgs.length; i++) {
-        imgs[i].hidden = true;
-        imgs[i].src = "";
+    function HideOrShowImages () {
+      if (ui_theimg_wrapper.hidden) {
+        ui_theimg_wrapper.hidden = false;
+        ui_hideButton.innerText = "Hide";
+      } else {
+        ui_theimg_wrapper.hidden = true;
+        ui_hideButton.innerText = "Show";
       }
-      ui_viewButton.disabled = (ui_textinput.value.trim().length == 0);
+      ui_viewButton.disabled = (ui_textinput.value == last_good_text || ui_textinput.value.trim().length == 0);
+      ui_hideButton.disabled = (ui_theimg_container.children.length == 0);
     }
 
     function OnKeypress (event) {
@@ -304,7 +284,7 @@
       <button class="mainbutton" id="ui_viewButton" onclick="SetImages()" disabled="true">View</button>
     </div>
     <div>
-      <button class="mainbutton" id="ui_hideButton" onclick="HideImages()">Hide</button>
+      <button class="mainbutton" id="ui_hideButton" onclick="HideOrShowImages()" disabled="true">Hide</button>
     </div>
     <div>
       <button class="mainbutton" id="ui_clearButton" onclick="ClearImages()">Clear</button>
